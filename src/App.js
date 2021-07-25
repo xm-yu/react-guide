@@ -1,5 +1,6 @@
 import { OriginalIndex, FilterElemDome } from './demos/jsx';
-import { StateDemo } from './demos/component';
+import ReactComponentDemo from './demos/component';
+import StateDemo from './demos/state/index';
 import './App.css';
 
 function App() {
@@ -7,6 +8,8 @@ function App() {
     <>
       <OriginalIndex />
       <FilterElemDome />
+      <ReactComponentDemo />
+      <h2>state</h2>
       <StateDemo />
     </>
   );
