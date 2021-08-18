@@ -3,6 +3,7 @@
 // state
 import StateDemo from './demos/state/index';
 import './App.css';
+import Demo from './demos/props/demo';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <ReactComponentDemo /> */}
       <h2>state</h2>
       <StateDemo />
+      <Demo />
     </>
   );
 }
