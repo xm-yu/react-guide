@@ -33,35 +33,49 @@ class Form extends React.Component {
     };
   };
 
+  handleFormItemValueChange = (name, value) => {
+    this.setState(prevState => {
+      return {
+        formState: {
+          ...prevState.formState,
+          [name]: value,
+        },
+      };
+    });
+  };
+
   render() {
     const { children } = this.props;
     const renderChildren = [];
     React.Children.forEach(children, child => {
-      console.log(child);
       if (child.type.displayName === 'FormItem') {
         const { name } = child.props;
         const Children = React.cloneElement(child, {
           key: name,
-          onChange: this.handleItemChange(name),
+          onChange: this.handleFormItemValueChange,
           value: this.state.formState[name] || '',
+          name,
         });
         renderChildren.push(Children);
       }
     });
-    console.log(renderChildren);
     return renderChildren;
   }
 }
 
 function FormItem(props) {
-  const { name, children, value, onChange } = props;
+  const { name, label, children, value, onChange } = props;
+
+  const handleChange = value => {
+    onChange(name, value);
+  };
 
   return (
     <div>
-      <span>{name}: </span>
+      <span>{label}: </span>
       {React.isValidElement(children) &&
         children.type.displayName === 'Input' &&
-        React.cloneElement(children, { onChange, value })}
+        React.cloneElement(children, { onChange: handleChange, value })}
     </div>
   );
 }
