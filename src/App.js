@@ -4,6 +4,7 @@
 import StateDemo from './demos/state/index';
 import './App.css';
 import Demo from './demos/props/demo';
+import RefIndex from './demos/ref/index';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <h2>state</h2>
       <StateDemo />
       <Demo />
+      <RefIndex />
     </>
   );
 }
