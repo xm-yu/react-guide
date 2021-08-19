@@ -1,4 +1,3 @@
-import { call } from 'file-loader';
 import React from 'react';
 
 export default function Index() {
@@ -13,6 +12,9 @@ export default function Index() {
       <DisposeRefObj />
       <HocForwardRefCmp />
       <Grandpa />
+
+      <RefInformFather />
+      <FatherOne />
     </>
   );
 }
@@ -195,3 +197,107 @@ class HocForwardRefCmp extends React.Component {
 
   render = () => <HOCTestCmp ref={this.forwardRef} />;
 }
+
+// ref 实现组件之间的通信
+
+// 通过ref直接标记类组件实例 实现父组件触发子组件更新 例：antd 操作form组件的resetFields setFields
+
+class RefInformSon extends React.PureComponent {
+  state = {
+    fatherMsg: '',
+    sonMsg: '',
+  };
+
+  fatherSay = msg => this.setState({ fatherMsg: msg });
+  render() {
+    return (
+      <>
+        <h4>son</h4>
+        <p>父组件说：{this.state.fatherMsg}</p>
+        <div>
+          <input
+            type="text"
+            value={this.state.sonMsg}
+            onChange={e =>
+              this.setState({
+                sonMsg: e.target.value,
+              })
+            }
+          />
+          <button onClick={() => this.props.toFather(this.state.sonMsg)}>
+            发送
+          </button>
+        </div>
+      </>
+    );
+  }
+}
+
+function RefInformFather() {
+  const sonInstanceRef = React.useRef();
+  const [sonMsg, setSonMsg] = React.useState('');
+  const [fatherMsg, setFatherMsg] = React.useState('');
+  return (
+    <>
+      <h4>father</h4>
+      <p>子组件说：{sonMsg}</p>
+      <div>
+        <input
+          type="text"
+          value={fatherMsg}
+          onChange={e => setFatherMsg(e.target.value)}
+        />
+        <button onClick={() => sonInstanceRef.current.fatherSay(fatherMsg)}>
+          发送
+        </button>
+      </div>
+      <div>
+        <RefInformSon ref={sonInstanceRef} toFather={setSonMsg} />
+      </div>
+    </>
+  );
+}
+
+// React.forwardRef + useImperativeHandle 实现函数组件使用Ref通信
+// forwardRef 转发ref userImperativeHandle 在函数组件暴露一个自定义的实例给父组件 (其实函数组件是没有实例的)
+
+const SonOne = React.forwardRef((props, ref) => {
+  const [value, setValue] = React.useState('');
+  const inputRef = React.useRef();
+
+  // 通过useImperativeHandle暴露函数内部的方法
+  React.useImperativeHandle(
+    ref,
+    () => ({
+      onFocus() {
+        inputRef.current.focus();
+      },
+      onChangeValue(value) {
+        setValue(value);
+      },
+    }),
+
+    []
+  );
+
+  return <input type="text" value={value} ref={inputRef} />;
+});
+
+const FatherOne = () => {
+  const sonRef = React.useRef();
+
+  const handleClick = React.useCallback(() => {
+    if (sonRef) {
+      const { onFocus, onChangeValue } = sonRef.current;
+      onFocus();
+      onChangeValue('hahahaha ');
+    }
+  }, []);
+
+  return (
+    <>
+      <SonOne ref={sonRef} />
+      <button onClick={handleClick}>change input value</button>
+    </>
+  );
+};
