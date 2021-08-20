@@ -15,6 +15,7 @@ export default function Index() {
 
       <RefInformFather />
       <FatherOne />
+      <RefCbExample />
     </>
   );
 }
@@ -301,3 +302,97 @@ const FatherOne = () => {
     </>
   );
 };
+
+// test ref cb
+
+class RefCbExample extends React.Component {
+  state = {
+    count: 0,
+  };
+  dom1 = null;
+  dom2 = null;
+  componentDidUpdate() {
+    console.log(this.dom1);
+    console.log(this.dom2);
+    console.log('didUpdate');
+  }
+
+  refCb = node => {
+    console.log('function log', node);
+    this.dom2 = node;
+  };
+  render() {
+    console.log('render log');
+
+    return (
+      <div>
+        <button
+          onClick={() =>
+            this.setState({
+              count: this.state.count + 1,
+            })
+          }
+        >
+          rerender
+        </button>
+        <p
+          a={this.state.count}
+          // 使用内联函数 每次render ref的值发生变化 函数被重新执行
+          ref={node => {
+            console.log('arrow function log', node);
+            this.dom1 = node;
+          }}
+        >
+          dom1,click count:{this.state.count}
+        </p>
+        <p a={this.state.count} ref={this.refCb}>
+          dom2,click count:{this.state.count}
+        </p>
+
+        <ExampleDemo />
+      </div>
+    );
+  }
+}
+
+class ExampleDemo extends React.Component {
+  state = { num: 0 };
+  node = null;
+
+  refcb = node => {
+    this.node = node;
+    console.log('此时的参数是什么：', this.node);
+  };
+  render() {
+    return (
+      <div>
+        <div ref={this.refcb}>ref元素节点_{this.state.num}</div>
+        <button onClick={() => this.setState({ num: this.state.num + 1 })}>
+          点击{this.state.num}
+        </button>
+        <TestUseBind />
+      </div>
+    );
+  }
+}
+
+function TestUseBind() {
+  const [list] = React.useState([
+    { id: 1, name: 'test' },
+    { id: 2, name: 'test2' },
+  ]);
+
+  const handleClick = React.useCallback(data => {
+    console.log(data.name);
+  }, []);
+
+  return (
+    <ul>
+      {list.map(item => (
+        <li key={item.id} onClick={handleClick.bind(null, item)}>
+          {item.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
