@@ -6,6 +6,8 @@ import './App.css';
 import Demo from './demos/props/demo';
 import RefIndex from './demos/ref/index';
 import ProviderDemo from './demos/context';
+import HocDemo from './demos/hoc';
+import OptimizeRenderDemo from './demos/optimize-render';
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
       {/* <StateDemo /> */}
       {/* <Demo /> */}
       {/* <RefIndex /> */}
-      <ProviderDemo />
+      {/* <ProviderDemo /> */}
+      <OptimizeRenderDemo />
     </>
   );
 }
